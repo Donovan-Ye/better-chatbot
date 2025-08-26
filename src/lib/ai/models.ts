@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createOllama } from "ollama-ai-provider-v2";
-import { createOpenAI } from "@ai-sdk/openai";
+import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import { anthropic } from "@ai-sdk/anthropic";
 import { xai } from "@ai-sdk/xai";
@@ -17,9 +17,9 @@ const ollama = createOllama({
   baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
 });
 
-const openai = createOpenAI({
-  baseURL: process.env.OPENAI_BASE_URL,
-});
+// const openai = createOpenAI({
+//   baseURL: process.env.OPENAI_BASE_URL,
+// });
 
 const staticModels = {
   openai: {
