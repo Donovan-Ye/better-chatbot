@@ -11,6 +11,7 @@ import {
   UserSchema,
   VerificationSchema,
 } from "lib/db/pg/schema.pg";
+import { genericOAuth } from "better-auth/plugins";
 import { getAuthConfig } from "./config";
 
 import logger from "logger";
@@ -22,8 +23,37 @@ const {
   socialAuthenticationProviders,
 } = getAuthConfig();
 
+const idmConfig = {
+  providerId: "idm",
+  clientId: process.env.IDM_CLIENT_ID!,
+  clientSecret: process.env.IDM_CLIENT_SECRET!,
+  authorizationUrl: process.env.IDM_BASE_URL,
+  tokenUrl: `${process.env.IDM_BASE_URL}/${process.env.IDM_TOKEN_URL}`,
+  // userInfoUrl: `${process.env.IDM_BASE_URL}/${process.env.IDM_USER_INFO_URL}`,
+  // redirectURI: `${process.env.BETTER_AUTH_TRUSTED_ORIGINS}/api/auth/callback/idm`,
+  getUserInfo: async (accessToken) => {
+    const response = await fetch(
+      `${process.env.IDM_BASE_URL}/${process.env.IDM_USER_INFO_URL}`,
+      {
+        headers: {
+          Authorization: accessToken.accessToken!,
+        },
+      },
+    );
+
+    const res = await response.json();
+    return res.data;
+  },
+  scopes: ["all"],
+};
+
 export const auth = betterAuth({
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    genericOAuth({
+      config: [idmConfig],
+    }),
+  ],
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   database: drizzleAdapter(pgDb, {
     provider: "pg",
@@ -58,11 +88,14 @@ export const auth = betterAuth({
   },
   account: {
     accountLinking: {
-      trustedProviders: (
-        Object.keys(
-          socialAuthenticationProviders,
-        ) as (keyof typeof socialAuthenticationProviders)[]
-      ).filter((key) => socialAuthenticationProviders[key]),
+      trustedProviders: [
+        idmConfig.providerId,
+        ...(
+          Object.keys(
+            socialAuthenticationProviders,
+          ) as (keyof typeof socialAuthenticationProviders)[]
+        ).filter((key) => socialAuthenticationProviders[key]),
+      ],
     },
   },
   fetchOptions: {

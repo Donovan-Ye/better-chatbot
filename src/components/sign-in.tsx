@@ -67,6 +67,17 @@ export default function SignIn({
       toast.error(e.error);
     });
   };
+
+  const handleGenericOAuthSignIn = () => {
+    authClient.signIn
+      .oauth2({
+        providerId: "idm",
+      })
+      .catch((e) => {
+        toast.error(e.error);
+      });
+  };
+
   return (
     <div className="w-full h-full flex flex-col p-4 md:p-8 justify-center">
       <Card className="w-full md:max-w-md bg-background border-none mx-auto shadow-none animate-in fade-in duration-1000">
@@ -126,51 +137,58 @@ export default function SignIn({
               </Button>
             </div>
           )}
-          {socialAuthenticationProviders.length > 0 && (
-            <>
-              {emailAndPasswordEnabled && (
-                <div className="flex items-center my-4">
-                  <div className="flex-1 h-px bg-accent"></div>
-                  <span className="px-4 text-sm text-muted-foreground">
-                    {t("orContinueWith")}
-                  </span>
-                  <div className="flex-1 h-px bg-accent"></div>
-                </div>
-              )}
-              <div className="flex flex-col gap-2 w-full">
-                {socialAuthenticationProviders.includes("google") && (
-                  <Button
-                    variant="outline"
-                    onClick={() => handleSocialSignIn("google")}
-                    className="flex-1 w-full"
-                  >
-                    <GoogleIcon className="size-4 fill-foreground" />
-                    Google
-                  </Button>
-                )}
-                {socialAuthenticationProviders.includes("github") && (
-                  <Button
-                    variant="outline"
-                    onClick={() => handleSocialSignIn("github")}
-                    className="flex-1 w-full"
-                  >
-                    <GithubIcon className="size-4 fill-foreground" />
-                    GitHub
-                  </Button>
-                )}
-                {socialAuthenticationProviders.includes("microsoft") && (
-                  <Button
-                    variant="outline"
-                    onClick={() => handleSocialSignIn("microsoft")}
-                    className="flex-1 w-full"
-                  >
-                    <MicrosoftIcon className="size-4 fill-foreground" />
-                    Microsoft
-                  </Button>
-                )}
+          <>
+            {emailAndPasswordEnabled && (
+              <div className="flex items-center my-4">
+                <div className="flex-1 h-px bg-accent"></div>
+                <span className="px-4 text-sm text-muted-foreground">
+                  {t("orContinueWith")}
+                </span>
+                <div className="flex-1 h-px bg-accent"></div>
               </div>
-            </>
-          )}
+            )}
+            <div className="flex flex-col gap-2 w-full">
+              <Button
+                variant="outline"
+                onClick={handleGenericOAuthSignIn}
+                className="flex-1 w-full"
+              >
+                IDM
+              </Button>
+
+              {socialAuthenticationProviders.includes("google") && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignIn("google")}
+                  className="flex-1 w-full"
+                >
+                  <GoogleIcon className="size-4 fill-foreground" />
+                  Google
+                </Button>
+              )}
+              {socialAuthenticationProviders.includes("github") && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignIn("github")}
+                  className="flex-1 w-full"
+                >
+                  <GithubIcon className="size-4 fill-foreground" />
+                  GitHub
+                </Button>
+              )}
+              {socialAuthenticationProviders.includes("microsoft") && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleSocialSignIn("microsoft")}
+                  className="flex-1 w-full"
+                >
+                  <MicrosoftIcon className="size-4 fill-foreground" />
+                  Microsoft
+                </Button>
+              )}
+            </div>
+          </>
+
           {signUpEnabled && (
             <div className="my-8 text-center text-sm text-muted-foreground">
               {t("noAccount")}
