@@ -11,11 +11,12 @@ import {
   UserSchema,
   VerificationSchema,
 } from "lib/db/pg/schema.pg";
-import { genericOAuth } from "better-auth/plugins";
+import { genericOAuth, GenericOAuthConfig } from "better-auth/plugins";
 import { getAuthConfig } from "./config";
 
 import logger from "logger";
 import { redirect } from "next/navigation";
+import type { IDMUserInfo } from "app-types/authentication";
 
 const {
   emailAndPasswordEnabled,
@@ -23,7 +24,7 @@ const {
   socialAuthenticationProviders,
 } = getAuthConfig();
 
-const idmConfig = {
+const idmConfig: GenericOAuthConfig = {
   providerId: "idm",
   clientId: process.env.IDM_CLIENT_ID!,
   clientSecret: process.env.IDM_CLIENT_SECRET!,
@@ -42,7 +43,20 @@ const idmConfig = {
     );
 
     const res = await response.json();
-    return res.data;
+    const userInfo = (res?.data ?? {}) as IDMUserInfo;
+    return {
+      id: String(userInfo.id),
+      email: userInfo.email ?? "",
+      emailVerified: Boolean(userInfo.email),
+      name: userInfo.username ?? userInfo.name ?? "",
+      image: userInfo.picture ?? null,
+      createdAt: userInfo.createTime
+        ? new Date(userInfo.createTime)
+        : new Date(),
+      updatedAt: userInfo.updateTime
+        ? new Date(userInfo.updateTime)
+        : new Date(),
+    };
   },
   scopes: ["all"],
 };
