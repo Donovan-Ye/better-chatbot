@@ -31,6 +31,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+RUN sed -i 's/#http/http/g' /etc/apk/repositories
+RUN apk update && apk add libcap
+RUN setcap 'cap_net_bind_service=+ep' /usr/local/bin/node
 
 COPY --from=builder /app/public ./public
 
