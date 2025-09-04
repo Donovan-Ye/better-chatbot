@@ -3,7 +3,8 @@
  */
 export const PROXY_CONFIG = {
   // 代理服务器地址，默认为本地7890端口
-  PROXY_URL: process.env.OPENAI_PROXY_URL || "http://127.0.0.1:7890",
+  // 暂时写死服务器地址，后面改成环境变量测试
+  PROXY_URL: process.env.OPENAI_PROXY_URL || "http://192.168.0.236:7890",
   // 是否启用代理
   ENABLED: process.env.OPENAI_USE_PROXY !== "false", // 默认启用，设置为 "false" 时禁用
 };
