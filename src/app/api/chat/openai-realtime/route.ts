@@ -20,6 +20,7 @@ import {
 } from "../actions";
 import globalLogger from "lib/logger";
 import { colorize } from "consola/utils";
+import { createProxyFetch } from "lib/proxy-config";
 
 const logger = globalLogger.withDefaults({
   message: colorize("blackBright", `OpenAI Realtime API: `),
@@ -99,7 +100,8 @@ export async function POST(request: NextRequest) {
 
     const bindingTools = [...openAITools, ...DEFAULT_VOICE_TOOLS];
 
-    const r = await fetch("https://api.openai.com/v1/realtime/sessions", {
+    const proxyFetch = createProxyFetch();
+    const r = await proxyFetch("https://api.openai.com/v1/realtime/sessions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,

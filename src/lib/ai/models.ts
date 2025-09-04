@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createOllama } from "ollama-ai-provider-v2";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import { anthropic } from "@ai-sdk/anthropic";
 import { xai } from "@ai-sdk/xai";
@@ -12,24 +12,27 @@ import {
   openaiCompatibleModelsSafeParse,
 } from "./create-openai-compatiable";
 import { ChatModel } from "app-types/chat";
+import { createProxyFetch } from "../proxy-config";
 
 const ollama = createOllama({
   baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
 });
 
-// const openai = createOpenAI({
-//   baseURL: process.env.OPENAI_BASE_URL,
-// });
+// 创建支持代理的 OpenAI 客户端
+const proxyOpenAI = createOpenAI({
+  baseURL: process.env.OPENAI_BASE_URL,
+  fetch: createProxyFetch(),
+});
 
 const staticModels = {
   openai: {
-    "gpt-4.1": openai("gpt-4.1"),
-    "gpt-4.1-mini": openai("gpt-4.1-mini"),
-    "o4-mini": openai("o4-mini"),
-    o3: openai("o3"),
-    "gpt-5": openai("gpt-5"),
-    "gpt-5-mini": openai("gpt-5-mini"),
-    "gpt-5-nano": openai("gpt-5-nano"),
+    "gpt-4.1": proxyOpenAI("gpt-4.1"),
+    "gpt-4.1-mini": proxyOpenAI("gpt-4.1-mini"),
+    "o4-mini": proxyOpenAI("o4-mini"),
+    o3: proxyOpenAI("o3"),
+    "gpt-5": proxyOpenAI("gpt-5"),
+    "gpt-5-mini": proxyOpenAI("gpt-5-mini"),
+    "gpt-5-nano": proxyOpenAI("gpt-5-nano"),
   },
   google: {
     "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),

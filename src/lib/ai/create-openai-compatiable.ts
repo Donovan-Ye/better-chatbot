@@ -4,6 +4,7 @@ import { LanguageModel } from "ai";
 import { isString } from "lib/utils";
 import logger from "logger";
 import { z } from "zod";
+import { createProxyFetch } from "../proxy-config";
 
 /**
  * OpenAI-compatible models from an environment variable.
@@ -26,6 +27,7 @@ export function createOpenAICompatibleModels(
         name: provider,
         apiKey: apiKey,
         baseURL: baseUrl!,
+        fetch: createProxyFetch(),
       });
 
       providers[providerKey] = {};

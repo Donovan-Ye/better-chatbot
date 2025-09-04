@@ -1,4 +1,5 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createProxyFetch } from "../proxy-config";
 
 /**
  * Create an Azure OpenAI compatible provider that handles the specific API requirements
@@ -21,7 +22,8 @@ export function createAzureOpenAICompatible({
     // For Azure OpenAI, construct the full URL including the deployment name
     const azureBaseURL = `${baseURL}${modelName}`;
 
-    // Custom fetch implementation for Azure OpenAI
+    // Custom fetch implementation for Azure OpenAI with proxy support
+    const proxyFetch = createProxyFetch();
     const customFetch = async (
       input: URL | RequestInfo,
       init?: RequestInit,
@@ -45,7 +47,7 @@ export function createAzureOpenAICompatible({
         delete headers["Authorization"];
       }
 
-      return fetch(url, {
+      return proxyFetch(url, {
         ...init,
         headers,
       });
