@@ -46,9 +46,10 @@ const idmConfig: GenericOAuthConfig = {
     const userInfo = (res?.data ?? {}) as IDMUserInfo;
     return {
       id: String(userInfo.id),
-      email: userInfo.email ?? "",
-      emailVerified: Boolean(userInfo.email),
-      name: userInfo.username ?? userInfo.name ?? "",
+      // 使用username作为登录账号。
+      email: userInfo.username ?? "",
+      emailVerified: Boolean(userInfo.username),
+      name: userInfo.name ?? "",
       image: userInfo.picture ?? null,
       createdAt: userInfo.createTime
         ? new Date(userInfo.createTime)
