@@ -18,7 +18,6 @@ import { useShallow } from "zustand/shallow";
 import { useTheme } from "next-themes";
 import { extractMCPToolId } from "lib/ai/mcp/mcp-tool-id";
 import { callMcpToolByServerNameAction } from "@/app/api/mcp/actions";
-import { createProxyFetch } from "lib/proxy-config";
 
 export const OPENAI_VOICE = {
   Alloy: "alloy",
@@ -443,18 +442,14 @@ export function useOpenAIVoiceChat(
       });
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      const proxyFetch = createProxyFetch();
-      const sdpResponse = await proxyFetch(
-        `https://api.openai.com/v1/realtime`,
-        {
-          method: "POST",
-          body: offer.sdp,
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/sdp",
-          },
+      const sdpResponse = await fetch(`https://api.openai.com/v1/realtime`, {
+        method: "POST",
+        body: offer.sdp,
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+          "Content-Type": "application/sdp",
         },
-      );
+      });
       const answer: RTCSessionDescriptionInit = {
         type: "answer",
         sdp: await sdpResponse.text(),
