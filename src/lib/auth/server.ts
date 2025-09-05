@@ -70,6 +70,14 @@ export const auth = betterAuth({
     }),
   ],
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  user: {
+    additionalFields: {
+      balance: {
+        type: "number",
+        required: true,
+      },
+    },
+  },
   database: drizzleAdapter(pgDb, {
     provider: "pg",
     schema: {
