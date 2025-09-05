@@ -12,6 +12,7 @@ import {
   unique,
   varchar,
   index,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { isNotNull } from "drizzle-orm";
 import { DBWorkflow, DBEdge, DBNode } from "app-types/workflow";
@@ -95,6 +96,10 @@ export const UserSchema = pgTable("user", {
   password: text("password"),
   image: text("image"),
   preferences: json("preferences").default({}).$type<UserPreferences>(),
+  // 用户余额，使用decimal类型存储，精度为10位，小数点后2位，默认为0.00
+  balance: decimal("balance", { precision: 10, scale: 2 })
+    .default("0.00")
+    .notNull(),
   createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
@@ -317,3 +322,26 @@ export type McpServerCustomizationEntity =
 export type ArchiveEntity = typeof ArchiveSchema.$inferSelect;
 export type ArchiveItemEntity = typeof ArchiveItemSchema.$inferSelect;
 export type BookmarkEntity = typeof BookmarkSchema.$inferSelect;
+
+// 用户余额变动记录表
+export const UserBalanceHistorySchema = pgTable("user_balance_history", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => UserSchema.id, { onDelete: "cascade" }),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // 变动金额（正数为增加，负数为扣减）
+  balanceBefore: decimal("balance_before", {
+    precision: 10,
+    scale: 2,
+  }).notNull(), // 变动前余额
+  balanceAfter: decimal("balance_after", { precision: 10, scale: 2 }).notNull(), // 变动后余额
+  type: varchar("type", {
+    enum: ["add", "deduct", "set"],
+  }).notNull(), // 变动类型：增加、扣减、设置
+  reason: text("reason"), // 变动原因
+  metadata: json("metadata"), // 额外的元数据
+  createdAt: timestamp("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export type UserBalanceHistoryEntity =
+  typeof UserBalanceHistorySchema.$inferSelect;

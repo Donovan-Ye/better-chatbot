@@ -1,7 +1,7 @@
 import { User, UserPreferences, UserRepository } from "app-types/user";
 import { pgDb as db } from "../db.pg";
-import { UserSchema } from "../schema.pg";
-import { eq } from "drizzle-orm";
+import { UserSchema, UserBalanceHistorySchema } from "../schema.pg";
+import { eq, sql } from "drizzle-orm";
 
 export const pgUserRepository: UserRepository = {
   existsByEmail: async (email: string): Promise<boolean> => {
@@ -59,5 +59,135 @@ export const pgUserRepository: UserRepository = {
       .from(UserSchema)
       .where(eq(UserSchema.id, userId));
     return (result as User) ?? null;
+  },
+
+  // 余额相关方法
+  getBalance: async (userId: string): Promise<string> => {
+    const [result] = await db
+      .select({ balance: UserSchema.balance })
+      .from(UserSchema)
+      .where(eq(UserSchema.id, userId));
+    return result?.balance ?? "0.00";
+  },
+
+  updateBalance: async (userId: string, balance: string): Promise<User> => {
+    return await db.transaction(async (tx) => {
+      // 获取当前余额
+      const [currentUser] = await tx
+        .select({ balance: UserSchema.balance })
+        .from(UserSchema)
+        .where(eq(UserSchema.id, userId));
+
+      const balanceBefore = currentUser?.balance ?? "0.00";
+
+      // 更新余额
+      const [result] = await tx
+        .update(UserSchema)
+        .set({
+          balance,
+          updatedAt: new Date(),
+        })
+        .where(eq(UserSchema.id, userId))
+        .returning();
+
+      // 记录余额变动历史
+      await tx.insert(UserBalanceHistorySchema).values({
+        userId,
+        amount: sql`${balance} - ${balanceBefore}`,
+        balanceBefore,
+        balanceAfter: balance,
+        type: "set",
+        reason: "Balance updated",
+      });
+
+      return {
+        ...result,
+        preferences: result.preferences ?? undefined,
+      };
+    });
+  },
+
+  addBalance: async (userId: string, amount: string): Promise<User> => {
+    return await db.transaction(async (tx) => {
+      // 获取当前余额
+      const [currentUser] = await tx
+        .select({ balance: UserSchema.balance })
+        .from(UserSchema)
+        .where(eq(UserSchema.id, userId));
+
+      const balanceBefore = currentUser?.balance ?? "0.00";
+
+      // 更新余额
+      const [result] = await tx
+        .update(UserSchema)
+        .set({
+          balance: sql`${UserSchema.balance} + ${amount}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(UserSchema.id, userId))
+        .returning();
+
+      // 记录余额变动历史
+      await tx.insert(UserBalanceHistorySchema).values({
+        userId,
+        amount,
+        balanceBefore,
+        balanceAfter: result.balance,
+        type: "add",
+        reason: "Balance added",
+      });
+
+      return {
+        ...result,
+        preferences: result.preferences ?? undefined,
+      };
+    });
+  },
+
+  deductBalance: async (userId: string, amount: string): Promise<User> => {
+    return await db.transaction(async (tx) => {
+      // 获取当前余额
+      const [currentUser] = await tx
+        .select({ balance: UserSchema.balance })
+        .from(UserSchema)
+        .where(eq(UserSchema.id, userId));
+
+      const balanceBefore = currentUser?.balance ?? "0.00";
+
+      // 检查余额是否足够
+      const currentBalanceNum = parseFloat(balanceBefore);
+      const deductAmountNum = parseFloat(amount);
+
+      if (currentBalanceNum < deductAmountNum) {
+        throw new Error(
+          `Insufficient balance. Current: ${balanceBefore}, Required: ${amount}`,
+        );
+      }
+
+      // 更新余额
+      const [result] = await tx
+        .update(UserSchema)
+        .set({
+          balance: sql`${UserSchema.balance} - ${amount}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(UserSchema.id, userId))
+        .returning();
+
+      // 记录余额变动历史
+      await tx.insert(UserBalanceHistorySchema).values({
+        userId,
+        amount: sql`-${amount}`, // 负数表示扣减
+        balanceBefore,
+        balanceAfter: result.balance,
+        type: "deduct",
+        reason: "Balance deducted",
+      });
+
+      return {
+        ...result,
+        preferences: result.preferences ?? undefined,
+      };
+    });
   },
 };

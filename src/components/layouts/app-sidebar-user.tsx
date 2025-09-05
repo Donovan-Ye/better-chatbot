@@ -38,6 +38,7 @@ import { useCallback } from "react";
 import { GithubIcon } from "ui/github-icon";
 import { DiscordIcon } from "ui/discord-icon";
 import { useThemeStyle } from "@/hooks/use-theme-style";
+import { useUserBalance } from "@/hooks/queries/use-user-balance";
 import { Session, User } from "better-auth";
 
 export function AppSidebarUser({
@@ -47,6 +48,7 @@ export function AppSidebarUser({
   const t = useTranslations("Layout");
 
   const user = session?.user;
+  const { data: userBalance, isLoading: isBalanceLoading } = useUserBalance();
 
   const logout = () => {
     authClient.signOut().finally(() => {
@@ -87,6 +89,11 @@ export function AppSidebarUser({
                 <AvatarFallback>{user?.name?.slice(0, 1) || ""}</AvatarFallback>
               </Avatar>
               <span className="truncate">{user?.email}</span>
+              <span className="truncate text-xs text-muted-foreground font-medium">
+                {isBalanceLoading
+                  ? "Loading..."
+                  : `${userBalance?.balance || "0"} credits`}
+              </span>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>

@@ -13,6 +13,7 @@ export type User = {
   email: string;
   image: string | null;
   preferences?: UserPreferences;
+  balance: string; // 使用string类型存储decimal值，避免精度问题
 };
 
 export type UserRepository = {
@@ -24,6 +25,11 @@ export type UserRepository = {
   ) => Promise<User>;
   getPreferences: (userId: string) => Promise<UserPreferences | null>;
   findById: (userId: string) => Promise<User | null>;
+  // 余额相关方法
+  getBalance: (userId: string) => Promise<string>;
+  updateBalance: (userId: string, balance: string) => Promise<User>;
+  addBalance: (userId: string, amount: string) => Promise<User>;
+  deductBalance: (userId: string, amount: string) => Promise<User>;
 };
 
 export const UserZodSchema = z.object({
