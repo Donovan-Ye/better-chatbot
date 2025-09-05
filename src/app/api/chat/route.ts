@@ -12,11 +12,7 @@ import { customModelProvider, isToolCallUnsupportedModel } from "lib/ai/models";
 
 import { mcpClientsManager } from "lib/ai/mcp/mcp-manager";
 
-import {
-  agentRepository,
-  chatRepository,
-  userRepository,
-} from "lib/db/repository";
+import { agentRepository, chatRepository } from "lib/db/repository";
 import globalLogger from "logger";
 import {
   buildMcpServerCustomizationsSystemPrompt,
