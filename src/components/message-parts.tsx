@@ -854,7 +854,6 @@ export const ToolMessagePart = memo(
 
     const CustomToolComponent = useMemo(() => {
       if (isMcpUIPart) {
-        console.log("mcpUIPartResource", mcpUIPartResource);
         return (
           <UIResourceRenderer
             htmlProps={{
@@ -960,7 +959,6 @@ export const ToolMessagePart = memo(
 
     return (
       <div className="group w-full">
-        {JSON.stringify(isMcpUIPart)}
         {CustomToolComponent ? (
           CustomToolComponent
         ) : (
