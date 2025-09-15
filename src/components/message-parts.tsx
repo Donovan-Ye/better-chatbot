@@ -854,7 +854,34 @@ export const ToolMessagePart = memo(
 
     const CustomToolComponent = useMemo(() => {
       if (isMcpUIPart) {
-        return <UIResourceRenderer resource={mcpUIPartResource.resource} />;
+        console.log("mcpUIPartResource", mcpUIPartResource);
+        return (
+          <UIResourceRenderer
+            htmlProps={{
+              style: {
+                backgroundColor: "transparent",
+                border: "none",
+                borderRadius: "8px",
+                width: "100%",
+              },
+            }}
+            resource={{
+              ...mcpUIPartResource.resource,
+              text: `
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <!-- 为了dark模式时可以背景透明 -->
+                    <meta name="color-scheme" content="light dark">
+                  </head>
+                  <body>
+                    ${mcpUIPartResource.resource.text}
+                  </body>
+                </html>
+              `,
+            }}
+          />
+        );
       }
 
       if (
