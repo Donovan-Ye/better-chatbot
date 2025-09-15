@@ -25,6 +25,7 @@ import { useMemo, useState, memo, useEffect, useRef, useCallback } from "react";
 import { MessageEditor } from "./message-editor";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { useCopy } from "@/hooks/use-copy";
+import { UIResourceRenderer, isUIResource } from "@mcp-ui/client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { SelectModel } from "./select-model";
@@ -713,7 +714,6 @@ export const ToolMessagePart = memo(
     isLast,
     showActions,
     addToolResult,
-
     isError,
     messageId,
     setMessages,
@@ -724,6 +724,25 @@ export const ToolMessagePart = memo(
     const { output, toolCallId, state, input, errorText } = part;
 
     const toolName = useMemo(() => getToolName(part), [part.type]);
+
+    /**
+     * mcp-ui Resource
+     */
+    const mcpUIPartResource = useMemo(() => {
+      const contents = (part.output as any)?.content;
+      if (Array.isArray(contents) && contents?.[0]?.resource) {
+        return contents?.[0];
+      }
+      return null;
+    }, [part]);
+    /**
+     * 是否是mcp-ui response
+     */
+    const isMcpUIPart = useMemo(() => {
+      if (!mcpUIPartResource) return false;
+
+      return isUIResource(mcpUIPartResource);
+    }, [mcpUIPartResource]);
 
     const isCompleted = useMemo(() => {
       return state.startsWith("output");
@@ -834,6 +853,10 @@ export const ToolMessagePart = memo(
     );
 
     const CustomToolComponent = useMemo(() => {
+      if (isMcpUIPart) {
+        return <UIResourceRenderer resource={mcpUIPartResource.resource} />;
+      }
+
       if (
         toolName === DefaultToolName.WebSearch ||
         toolName === DefaultToolName.WebContent
@@ -910,6 +933,7 @@ export const ToolMessagePart = memo(
 
     return (
       <div className="group w-full">
+        {JSON.stringify(isMcpUIPart)}
         {CustomToolComponent ? (
           CustomToolComponent
         ) : (

@@ -398,7 +398,6 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
                   <div className="min-h-[calc(55dvh-56px)]" />
                 </>
               )}
-
               {error && <ErrorMessage error={error} />}
               <div className="min-w-0 min-h-52" />
             </div>

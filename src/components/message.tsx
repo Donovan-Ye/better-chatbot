@@ -48,7 +48,9 @@ const PurePreviewMessage = ({
   if (message.role == "system") {
     return null; // system message is not shown
   }
+
   if (!message.parts.length) return null;
+
   return (
     <div className="w-full mx-auto max-w-3xl px-6 group/message">
       <div
