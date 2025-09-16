@@ -25,7 +25,6 @@ import { useMemo, useState, memo, useEffect, useRef, useCallback } from "react";
 import { MessageEditor } from "./message-editor";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { useCopy } from "@/hooks/use-copy";
-import { UIResourceRenderer, isUIResource } from "@mcp-ui/client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { SelectModel } from "./select-model";
@@ -62,6 +61,9 @@ import { notify } from "lib/notify";
 import { ModelProviderIcon } from "ui/model-provider-icon";
 import { appStore } from "@/app/store";
 import { BACKGROUND_COLORS, EMOJI_DATA } from "lib/const";
+import { UIResource, UI_RESOURCE_PREFIX } from "./ui-resource-render/types";
+import { isUIResource } from "./ui-resource-render/utils";
+import UIResourceRender from "./ui-resource-render";
 
 type MessagePart = UIMessage["parts"][number];
 type TextMessagePart = Extract<MessagePart, { type: "text" }>;
@@ -728,7 +730,7 @@ export const ToolMessagePart = memo(
     /**
      * mcp-ui Resource
      */
-    const mcpUIPartResource = useMemo(() => {
+    const mcpPartResource: UIResource = useMemo(() => {
       const contents = (part.output as any)?.content;
       if (Array.isArray(contents) && contents?.[0]?.resource) {
         return contents?.[0];
@@ -739,10 +741,13 @@ export const ToolMessagePart = memo(
      * 是否是mcp-ui response
      */
     const isMcpUIPart = useMemo(() => {
-      if (!mcpUIPartResource) return false;
+      if (!mcpPartResource) return false;
 
-      return isUIResource(mcpUIPartResource);
-    }, [mcpUIPartResource]);
+      // 暂时先不用mcp-ui，想用自己定义的协议
+      // return isUIResource(mcpPartResource);
+
+      return isUIResource(mcpPartResource);
+    }, [mcpPartResource]);
 
     const isCompleted = useMemo(() => {
       return state.startsWith("output");
@@ -854,33 +859,34 @@ export const ToolMessagePart = memo(
 
     const CustomToolComponent = useMemo(() => {
       if (isMcpUIPart) {
-        return (
-          <UIResourceRenderer
-            htmlProps={{
-              style: {
-                backgroundColor: "transparent",
-                border: "none",
-                borderRadius: "8px",
-                width: "100%",
-              },
-            }}
-            resource={{
-              ...mcpUIPartResource.resource,
-              text: `
-                <!DOCTYPE html>
-                <html>
-                  <head>
-                    <!-- 为了dark模式时可以背景透明 -->
-                    <meta name="color-scheme" content="light dark">
-                  </head>
-                  <body>
-                    ${mcpUIPartResource.resource.text}
-                  </body>
-                </html>
-              `,
-            }}
-          />
-        );
+        return <UIResourceRender resource={mcpPartResource} />;
+        // return (
+        //   <UIResourceRenderer
+        //     htmlProps={{
+        //       style: {
+        //         backgroundColor: "transparent",
+        //         border: "none",
+        //         borderRadius: "8px",
+        //         width: "100%",
+        //       },
+        //     }}
+        //     resource={{
+        //       ...mcpPartResource.resource,
+        //       text: `
+        //         <!DOCTYPE html>
+        //         <html>
+        //           <head>
+        //             <!-- 为了dark模式时可以背景透明 -->
+        //             <meta name="color-scheme" content="light dark">
+        //           </head>
+        //           <body>
+        //             ${mcpPartResource.resource.text}
+        //           </body>
+        //         </html>
+        //       `,
+        //     }}
+        //   />
+        // );
       }
 
       if (
