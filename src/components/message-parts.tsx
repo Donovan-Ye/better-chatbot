@@ -61,7 +61,7 @@ import { notify } from "lib/notify";
 import { ModelProviderIcon } from "ui/model-provider-icon";
 import { appStore } from "@/app/store";
 import { BACKGROUND_COLORS, EMOJI_DATA } from "lib/const";
-import { UIResource, UI_RESOURCE_PREFIX } from "./ui-resource-render/types";
+import { UIResource } from "./ui-resource-render/types";
 import { isUIResource } from "./ui-resource-render/utils";
 import UIResourceRender from "./ui-resource-render";
 
