@@ -26,12 +26,12 @@ const proxyOpenAI = createOpenAI({
 
 const staticModels = {
   openai: {
-    // "gpt-4.1": proxyOpenAI("gpt-4.1"),
+    "gpt-4.1": proxyOpenAI("gpt-4.1"),
     "gpt-4.1-mini": proxyOpenAI("gpt-4.1-mini"),
     // "o4-mini": proxyOpenAI("o4-mini"),
     // o3: proxyOpenAI("o3"),
     // "gpt-5": proxyOpenAI("gpt-5"),
-    // "gpt-5-mini": proxyOpenAI("gpt-5-mini"),
+    "gpt-5-mini": proxyOpenAI("gpt-5-mini"),
     // "gpt-5-nano": proxyOpenAI("gpt-5-nano"),
   },
   google: {
