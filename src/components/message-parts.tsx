@@ -61,9 +61,11 @@ import { notify } from "lib/notify";
 import { ModelProviderIcon } from "ui/model-provider-icon";
 import { appStore } from "@/app/store";
 import { BACKGROUND_COLORS, EMOJI_DATA } from "lib/const";
-import { UIResource } from "./ui-resource-render/types";
-import { isUIResource } from "./ui-resource-render/utils";
-import UIResourceRender from "./ui-resource-render";
+// import { UIResource } from "./ui-resource-render/types";
+// import { isUIResource } from "./ui-resource-render/utils";
+// import UIResourceRender from "./ui-resource-render";
+import { isUIResource, UIResourceRenderer } from "@mcp-ui/client";
+import { Resource } from "@modelcontextprotocol/sdk/types.js";
 
 type MessagePart = UIMessage["parts"][number];
 type TextMessagePart = Extract<MessagePart, { type: "text" }>;
@@ -730,11 +732,24 @@ export const ToolMessagePart = memo(
     /**
      * mcp-ui Resource
      */
-    const mcpPartResource: UIResource = useMemo(() => {
+    const mcpPartResource: {
+      type: string;
+      resource?: Partial<Resource>;
+    } = useMemo(() => {
       const contents = (part.output as any)?.content;
       if (Array.isArray(contents) && contents?.[0]?.resource) {
-        return contents?.[0];
+        const content = contents?.[0];
+
+        if (content.resource.mimeType === "text/uri-list") {
+          const _url = content.resource.text;
+          return {
+            type: "resource",
+            resource: { ...content.resource, text: content.resource.text },
+          };
+        }
+        return content;
       }
+
       return null;
     }, [part]);
     /**
@@ -742,9 +757,6 @@ export const ToolMessagePart = memo(
      */
     const isMcpUIPart = useMemo(() => {
       if (!mcpPartResource) return false;
-
-      // 暂时先不用mcp-ui，想用自己定义的协议
-      // return isUIResource(mcpPartResource);
 
       return isUIResource(mcpPartResource);
     }, [mcpPartResource]);
@@ -858,35 +870,41 @@ export const ToolMessagePart = memo(
     );
 
     const CustomToolComponent = useMemo(() => {
-      if (isMcpUIPart) {
-        return <UIResourceRender resource={mcpPartResource} />;
-        // return (
-        //   <UIResourceRenderer
-        //     htmlProps={{
-        //       style: {
-        //         backgroundColor: "transparent",
-        //         border: "none",
-        //         borderRadius: "8px",
-        //         width: "100%",
-        //       },
-        //     }}
-        //     resource={{
-        //       ...mcpPartResource.resource,
-        //       text: `
-        //         <!DOCTYPE html>
-        //         <html>
-        //           <head>
-        //             <!-- 为了dark模式时可以背景透明 -->
-        //             <meta name="color-scheme" content="light dark">
-        //           </head>
-        //           <body>
-        //             ${mcpPartResource.resource.text}
-        //           </body>
-        //         </html>
-        //       `,
-        //     }}
-        //   />
-        // );
+      if (isMcpUIPart && mcpPartResource?.resource) {
+        // 自定义的mcp-ui，但不满足需求。
+        // 暂时保留
+        // return <UIResourceRender resource={mcpPartResource} />;
+
+        // 开源的mcp-ui
+        return (
+          <UIResourceRenderer
+            htmlProps={{
+              style: {
+                backgroundColor: "transparent",
+                border: "none",
+                borderRadius: "8px",
+                width: "100%",
+                minHeight: "500px",
+              },
+            }}
+            resource={mcpPartResource.resource}
+            // resource={{
+            //   ...mcpPartResource.resource,
+            //   text: `
+            //     <!DOCTYPE html>
+            //     <html>
+            //       <head>
+            //         <!-- 为了dark模式时可以背景透明 -->
+            //         <meta name="color-scheme" content="light dark">
+            //       </head>
+            //       <body>
+            //         ${mcpPartResource.resource.text}
+            //       </body>
+            //     </html>
+            //   `,
+            // }}
+          />
+        );
       }
 
       if (
