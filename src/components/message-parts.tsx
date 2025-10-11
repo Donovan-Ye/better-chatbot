@@ -66,6 +66,7 @@ import { BACKGROUND_COLORS, EMOJI_DATA } from "lib/const";
 // import UIResourceRender from "./ui-resource-render";
 import { isUIResource, UIResourceRenderer } from "@mcp-ui/client";
 import { Resource } from "@modelcontextprotocol/sdk/types.js";
+import { getMcpTokenByPart } from "lib/api/mcp-token";
 
 type MessagePart = UIMessage["parts"][number];
 type TextMessagePart = Extract<MessagePart, { type: "text" }>;
@@ -103,6 +104,11 @@ interface ToolMessagePartProps {
   addToolResult?: UseChatHelpers<UIMessage>["addToolResult"];
   isError?: boolean;
   setMessages?: UseChatHelpers<UIMessage>["setMessages"];
+}
+
+interface UIResource {
+  type: "resource";
+  resource: Partial<Resource>;
 }
 
 const MAX_TEXT_LENGTH = 600;
@@ -724,34 +730,43 @@ export const ToolMessagePart = memo(
     isManualToolInvocation,
   }: ToolMessagePartProps) => {
     const t = useTranslations("");
+    const [mcpPartResource, setMcpPartResource] = useState<UIResource | null>(
+      null,
+    );
 
     const { output, toolCallId, state, input, errorText } = part;
 
     const toolName = useMemo(() => getToolName(part), [part.type]);
 
-    /**
-     * mcp-ui Resource
-     */
-    const mcpPartResource: {
-      type: string;
-      resource?: Partial<Resource>;
-    } = useMemo(() => {
+    const getMcpPartResource = async (part: ToolUIPart) => {
+      console.log("part", part);
+      let result: UIResource | null = null;
       const contents = (part.output as any)?.content;
       if (Array.isArray(contents) && contents?.[0]?.resource) {
         const content = contents?.[0];
 
         if (content.resource.mimeType === "text/uri-list") {
-          const _url = content.resource.text;
-          return {
+          let url: string = content.resource.text;
+          const mcpToken = await getMcpTokenByPart(part);
+          if (mcpToken.success) {
+            url = `${url}?token=${mcpToken.data.tokens.access_token}`;
+          }
+
+          result = {
             type: "resource",
-            resource: { ...content.resource, text: content.resource.text },
+            resource: { ...content.resource, text: url },
           };
         }
-        return content;
       }
 
-      return null;
+      console.log("result", result);
+      setMcpPartResource(result);
+    };
+
+    useEffect(() => {
+      getMcpPartResource(part);
     }, [part]);
+
     /**
      * 是否是mcp-ui response
      */
@@ -871,11 +886,6 @@ export const ToolMessagePart = memo(
 
     const CustomToolComponent = useMemo(() => {
       if (isMcpUIPart && mcpPartResource?.resource) {
-        // 自定义的mcp-ui，但不满足需求。
-        // 暂时保留
-        // return <UIResourceRender resource={mcpPartResource} />;
-
-        // 开源的mcp-ui
         return (
           <UIResourceRenderer
             htmlProps={{
@@ -886,6 +896,11 @@ export const ToolMessagePart = memo(
                 width: "100%",
                 minHeight: "500px",
               },
+              sandboxPermissions: "allow-forms",
+            }}
+            onUIAction={(result) => {
+              console.log("result", result);
+              return Promise.resolve({});
             }}
             resource={mcpPartResource.resource}
             // resource={{
@@ -963,7 +978,7 @@ export const ToolMessagePart = memo(
         }
       }
       return null;
-    }, [toolName, state, onToolCallDirect, result, input]);
+    }, [toolName, state, onToolCallDirect, result, input, mcpPartResource]);
 
     const { serverName: mcpServerName, toolName: mcpToolName } = useMemo(() => {
       return extractMCPToolId(toolName);
