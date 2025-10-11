@@ -127,6 +127,7 @@ const PurePreviewMessage = ({
                   key={key}
                   part={part}
                   setMessages={setMessages}
+                  sendMessage={sendMessage}
                 />
               );
             } else if (part.type === "step-start") {

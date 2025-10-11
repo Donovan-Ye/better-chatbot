@@ -104,6 +104,7 @@ interface ToolMessagePartProps {
   addToolResult?: UseChatHelpers<UIMessage>["addToolResult"];
   isError?: boolean;
   setMessages?: UseChatHelpers<UIMessage>["setMessages"];
+  sendMessage?: UseChatHelpers<UIMessage>["sendMessage"];
 }
 
 interface UIResource {
@@ -727,6 +728,7 @@ export const ToolMessagePart = memo(
     isError,
     messageId,
     setMessages,
+    sendMessage,
     isManualToolInvocation,
   }: ToolMessagePartProps) => {
     const t = useTranslations("");
@@ -749,7 +751,7 @@ export const ToolMessagePart = memo(
           let url: string = content.resource.text;
           const mcpToken = await getMcpTokenByPart(part);
           if (mcpToken.success) {
-            url = `${url}?token=${mcpToken.data.tokens.access_token}`;
+            url = `${url}?token=${mcpToken.data.tokens.refresh_token}`;
           }
 
           result = {
@@ -894,13 +896,47 @@ export const ToolMessagePart = memo(
                 border: "none",
                 borderRadius: "8px",
                 width: "100%",
-                minHeight: "500px",
+                minHeight: "700px",
               },
               sandboxPermissions: "allow-forms",
             }}
-            onUIAction={(result) => {
-              console.log("result", result);
-              return Promise.resolve({});
+            onUIAction={async (result) => {
+              // Cast to any to handle custom iframe message types
+              const resultAny = result as any;
+
+              // Check if this is a ui-request-data action
+              if (resultAny.type === "Tool" && sendMessage) {
+                const { payload } = resultAny;
+                const { requestType, params } = payload;
+
+                try {
+                  // Trigger a new chat round with the request
+                  sendMessage({
+                    role: "user",
+                    parts: [
+                      {
+                        type: "text",
+                        text: `Please call the tool "${requestType}" with the following parameters:\n\n${JSON.stringify(params, null, 2)}`,
+                      },
+                    ],
+                  });
+
+                  // Return acknowledgment to the iframe
+                  return {
+                    success: true,
+                    message: "Request sent to AI assistant",
+                  };
+                } catch (error) {
+                  console.error("Error sending message:", error);
+                  return {
+                    success: false,
+                    error:
+                      error instanceof Error ? error.message : "Unknown error",
+                  };
+                }
+              }
+
+              return {};
             }}
             resource={mcpPartResource.resource}
             // resource={{
@@ -978,7 +1014,16 @@ export const ToolMessagePart = memo(
         }
       }
       return null;
-    }, [toolName, state, onToolCallDirect, result, input, mcpPartResource]);
+    }, [
+      toolName,
+      state,
+      onToolCallDirect,
+      result,
+      input,
+      mcpPartResource,
+      isMcpUIPart,
+      sendMessage,
+    ]);
 
     const { serverName: mcpServerName, toolName: mcpToolName } = useMemo(() => {
       return extractMCPToolId(toolName);
