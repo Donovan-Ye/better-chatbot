@@ -12,7 +12,11 @@ import { customModelProvider, isToolCallUnsupportedModel } from "lib/ai/models";
 
 import { mcpClientsManager } from "lib/ai/mcp/mcp-manager";
 
-import { agentRepository, chatRepository } from "lib/db/repository";
+import {
+  agentRepository,
+  chatRepository,
+  userRepository,
+} from "lib/db/repository";
 import globalLogger from "logger";
 import {
   buildMcpServerCustomizationsSystemPrompt,
@@ -292,6 +296,8 @@ export async function POST(request: Request) {
             updatedAt: new Date(),
           } as any);
         }
+
+        await userRepository.deductBalance(session.user.id, "1");
       },
       onError: handleError,
       originalMessages: messages,

@@ -118,6 +118,9 @@ export default function ChatBot({ threadId, initialMessages }: Props) {
     } else if (latestRef.current.threadList[0]?.id !== threadId) {
       mutate("/api/thread");
     }
+
+    // 刷新用户余额
+    mutate("/api/user/balance");
   }, []);
 
   const [input, setInput] = useState("");

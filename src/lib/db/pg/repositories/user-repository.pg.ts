@@ -79,6 +79,7 @@ export const pgUserRepository: UserRepository = {
         .where(eq(UserSchema.id, userId));
 
       const balanceBefore = currentUser?.balance ?? "0.00";
+      console.log("balanceBefore", balanceBefore);
 
       // 更新余额
       const [result] = await tx
@@ -89,11 +90,12 @@ export const pgUserRepository: UserRepository = {
         })
         .where(eq(UserSchema.id, userId))
         .returning();
+      console.log("result", result);
 
       // 记录余额变动历史
       await tx.insert(UserBalanceHistorySchema).values({
         userId,
-        amount: sql`${balance} - ${balanceBefore}`,
+        amount: sql`${balance}::numeric - ${balanceBefore}::numeric`,
         balanceBefore,
         balanceAfter: balance,
         type: "set",
@@ -177,7 +179,7 @@ export const pgUserRepository: UserRepository = {
       // 记录余额变动历史
       await tx.insert(UserBalanceHistorySchema).values({
         userId,
-        amount: sql`-${amount}`, // 负数表示扣减
+        amount: sql`-${amount}::numeric`, // 负数表示扣减
         balanceBefore,
         balanceAfter: result.balance,
         type: "deduct",
