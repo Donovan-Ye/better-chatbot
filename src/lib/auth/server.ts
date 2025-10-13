@@ -51,6 +51,7 @@ const idmConfig: GenericOAuthConfig = {
       emailVerified: Boolean(userInfo.username),
       name: userInfo.name ?? "",
       image: userInfo.picture ?? null,
+      balance: "100",
       createdAt: userInfo.createTime
         ? new Date(userInfo.createTime)
         : new Date(),

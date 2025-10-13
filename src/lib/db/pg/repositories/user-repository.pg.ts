@@ -79,7 +79,6 @@ export const pgUserRepository: UserRepository = {
         .where(eq(UserSchema.id, userId));
 
       const balanceBefore = currentUser?.balance ?? "0.00";
-      console.log("balanceBefore", balanceBefore);
 
       // 更新余额
       const [result] = await tx
