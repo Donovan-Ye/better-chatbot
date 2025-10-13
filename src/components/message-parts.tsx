@@ -898,7 +898,7 @@ export const ToolMessagePart = memo(
                 width: "100%",
                 minHeight: "700px",
               },
-              sandboxPermissions: "allow-forms",
+              sandboxPermissions: "allow-forms allow-popups",
             }}
             onUIAction={async (result) => {
               // Cast to any to handle custom iframe message types
