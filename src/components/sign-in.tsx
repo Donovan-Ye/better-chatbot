@@ -68,15 +68,15 @@ export default function SignIn({
     });
   };
 
-  const handleGenericOAuthSignIn = () => {
-    authClient.signIn
-      .oauth2({
-        providerId: "idm",
-      })
-      .catch((e) => {
-        toast.error(e.error);
-      });
-  };
+  // const handleGenericOAuthSignIn = () => {
+  //   authClient.signIn
+  //     .oauth2({
+  //       providerId: "idm",
+  //     })
+  //     .catch((e) => {
+  //       toast.error(e.error);
+  //     });
+  // };
 
   return (
     <div className="w-full h-full flex flex-col p-4 md:p-8 justify-center">
@@ -148,13 +148,13 @@ export default function SignIn({
               </div>
             )}
             <div className="flex flex-col gap-2 w-full">
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={handleGenericOAuthSignIn}
                 className="flex-1 w-full"
               >
                 IDM
-              </Button>
+              </Button> */}
 
               {socialAuthenticationProviders.includes("google") && (
                 <Button
