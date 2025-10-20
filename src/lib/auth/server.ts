@@ -79,6 +79,20 @@ export const auth = betterAuth({
       },
     },
   },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              balance: 100,
+            },
+          };
+        },
+      },
+    },
+  },
   database: drizzleAdapter(pgDb, {
     provider: "pg",
     schema: {
