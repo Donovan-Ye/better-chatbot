@@ -28,9 +28,7 @@ Docker provides a streamlined and efficient method for managing containerized ap
     For the database, Docker will handle all necessary configuration automatically,  
     so the default `docker/.env` file is sufficient.
 
-
-
-1.  **Build and Start the Container:**
+3.  **Build and Start the Container:**
     From the project's root directory, build the Docker image and start the container in detached mode (running in the background):
 
     ```sh

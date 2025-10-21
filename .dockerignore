@@ -1,9 +1,18 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-Dockerfile
+# Docker files
+Dockerfile*
 compose.yml
-/node_modules
+docker-compose*.yml
+.dockerignore
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -12,45 +21,67 @@ compose.yml
 !.yarn/releases
 !.yarn/versions
 
-
-# testing
+# Testing
 /coverage
+/tests/.auth
+test-results/
+playwright-report/
+.env.test
 
-# next.js
+# Next.js
 /.next/
 /out/
 
-# production
+# Production
 /build
 
-# misc
+# Misc
 .DS_Store
 *.pem
 *.local.*
 
-# debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Environment files
+.env
+.env.*
+!.env.example
 
-# vercel
+# Vercel
 .vercel
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 .local-cache
 
-# memory-bank
-/memory-bank
-
-local-data
-
+# IDE and Editor
+.vscode
+.idea
 .cursorrules
 .cursor
+*.swp
+*.swo
+*~
+
+# Memory bank
+/memory-bank
+
+# Local data
+local-data
 *.ignore
 .mcp-config.json
-.next
+certificates
+
+# Build artifacts
 .changeset
+
+# Documentation (optional - uncomment if you don't want docs in the image)
+# README.md
+# CONTRIBUTING.md
+# CHANGELOG.md
+# docs/
