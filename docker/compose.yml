@@ -20,7 +20,7 @@ services:
     environment:
       - POSTGRES_USER=your_username
       - POSTGRES_PASSWORD=your_password
-      - POSTGRES_DB=better-chatbot
+      - POSTGRES_DB=better_chatbot
     # env_file:
     #   - .env
     networks:
