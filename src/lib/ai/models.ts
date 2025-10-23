@@ -25,11 +25,10 @@ if (process.env.OPENAI_BASE_URL) {
   });
 }
 // 创建支持代理的 OpenAI 客户端
-const proxyOpenAI = (model: string) =>
-  createOpenAI({
-    baseURL: process.env.OPENAI_BASE_URL,
-    fetch: createProxyFetch(),
-  }).chat(model);
+const proxyOpenAI = createOpenAI({
+  baseURL: process.env.OPENAI_BASE_URL,
+  fetch: createProxyFetch(),
+});
 
 const staticModels = {
   openai: {
