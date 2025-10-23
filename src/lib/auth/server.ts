@@ -86,7 +86,7 @@ export const auth = betterAuth({
           return {
             data: {
               ...user,
-              balance: 100,
+              balance: 15,
             },
           };
         },
