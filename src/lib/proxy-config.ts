@@ -43,6 +43,11 @@ export function createProxyFetch(): typeof fetch {
         proxyUrl: PROXY_CONFIG.PROXY_URL,
       });
 
+      if (!PROXY_CONFIG.PROXY_URL) {
+        console.error("❌ Proxy URL is not set");
+        return fetch(input, init);
+      }
+
       try {
         // 尝试使用 undici 的 ProxyAgent
         const { ProxyAgent } = await import("undici");
