@@ -13,11 +13,17 @@ import {
 } from "./create-openai-compatiable";
 import { ChatModel } from "app-types/chat";
 import { createProxyFetch } from "../proxy-config";
+import logger from "logger";
 
 const ollama = createOllama({
   baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
 });
 
+if (process.env.OPENAI_BASE_URL) {
+  logger.info("OPENAI_BASE_URL is set", {
+    OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
+  });
+}
 // 创建支持代理的 OpenAI 客户端
 const proxyOpenAI = createOpenAI({
   baseURL: process.env.OPENAI_BASE_URL,
