@@ -1,11 +1,11 @@
 import "server-only";
 
-import { createOllama } from "ollama-ai-provider-v2";
+// import { createOllama } from "ollama-ai-provider-v2";
 import { createOpenAI } from "@ai-sdk/openai";
-import { google } from "@ai-sdk/google";
-import { anthropic } from "@ai-sdk/anthropic";
-import { xai } from "@ai-sdk/xai";
-import { openrouter } from "@openrouter/ai-sdk-provider";
+// import { google } from "@ai-sdk/google";
+// import { anthropic } from "@ai-sdk/anthropic";
+// import { xai } from "@ai-sdk/xai";
+// import { openrouter } from "@openrouter/ai-sdk-provider";
 import { LanguageModel } from "ai";
 import {
   createOpenAICompatibleModels,
@@ -15,9 +15,9 @@ import { ChatModel } from "app-types/chat";
 import { createProxyFetch } from "../proxy-config";
 import logger from "logger";
 
-const ollama = createOllama({
-  baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
-});
+// const ollama = createOllama({
+//   baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434/api",
+// });
 
 if (process.env.OPENAI_BASE_URL) {
   logger.info("OPENAI_BASE_URL is set", {
@@ -33,55 +33,55 @@ const proxyOpenAI = (model: string) =>
 
 const staticModels = {
   openai: {
-    "gpt-4.1": proxyOpenAI("gpt-4.1"),
+    // "gpt-4.1": proxyOpenAI("gpt-4.1"),
     "gpt-4.1-mini": proxyOpenAI("gpt-4.1-mini"),
     // "o4-mini": proxyOpenAI("o4-mini"),
     // o3: proxyOpenAI("o3"),
     // "gpt-5": proxyOpenAI("gpt-5"),
-    "gpt-5-mini": proxyOpenAI("gpt-5-mini"),
+    // "gpt-5-mini": proxyOpenAI("gpt-5-mini"),
     // "gpt-5-nano": proxyOpenAI("gpt-5-nano"),
   },
-  google: {
-    "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
-    "gemini-2.5-flash": google("gemini-2.5-flash"),
-    "gemini-2.5-pro": google("gemini-2.5-pro"),
-  },
-  anthropic: {
-    "claude-4-sonnet": anthropic("claude-4-sonnet-20250514"),
-    "claude-4-opus": anthropic("claude-4-opus-20250514"),
-    "claude-3-7-sonnet": anthropic("claude-3-7-sonnet-20250219"),
-  },
-  xai: {
-    "grok-4": xai("grok-4"),
-    "grok-3": xai("grok-3"),
-    "grok-3-mini": xai("grok-3-mini"),
-  },
-  ollama: {
-    "gemma3:1b": ollama("gemma3:1b"),
-    "gemma3:4b": ollama("gemma3:4b"),
-    "gemma3:12b": ollama("gemma3:12b"),
-  },
-  openRouter: {
-    "gpt-oss-20b:free": openrouter("openai/gpt-oss-20b:free"),
-    "qwen3-8b:free": openrouter("qwen/qwen3-8b:free"),
-    "qwen3-14b:free": openrouter("qwen/qwen3-14b:free"),
-    "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
-    "deepseek-r1:free": openrouter("deepseek/deepseek-r1-0528:free"),
-    "deepseek-v3:free": openrouter("deepseek/deepseek-chat-v3-0324:free"),
-    "gemini-2.0-flash-exp:free": openrouter("google/gemini-2.0-flash-exp:free"),
-  },
+  // google: {
+  //   "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
+  //   "gemini-2.5-flash": google("gemini-2.5-flash"),
+  //   "gemini-2.5-pro": google("gemini-2.5-pro"),
+  // },
+  // anthropic: {
+  //   "claude-4-sonnet": anthropic("claude-4-sonnet-20250514"),
+  //   "claude-4-opus": anthropic("claude-4-opus-20250514"),
+  //   "claude-3-7-sonnet": anthropic("claude-3-7-sonnet-20250219"),
+  // },
+  // xai: {
+  //   "grok-4": xai("grok-4"),
+  //   "grok-3": xai("grok-3"),
+  //   "grok-3-mini": xai("grok-3-mini"),
+  // },
+  // ollama: {
+  //   "gemma3:1b": ollama("gemma3:1b"),
+  //   "gemma3:4b": ollama("gemma3:4b"),
+  //   "gemma3:12b": ollama("gemma3:12b"),
+  // },
+  // openRouter: {
+  //   "gpt-oss-20b:free": openrouter("openai/gpt-oss-20b:free"),
+  //   "qwen3-8b:free": openrouter("qwen/qwen3-8b:free"),
+  //   "qwen3-14b:free": openrouter("qwen/qwen3-14b:free"),
+  //   "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
+  //   "deepseek-r1:free": openrouter("deepseek/deepseek-r1-0528:free"),
+  //   "deepseek-v3:free": openrouter("deepseek/deepseek-chat-v3-0324:free"),
+  //   "gemini-2.0-flash-exp:free": openrouter("google/gemini-2.0-flash-exp:free"),
+  // },
 };
 
 const staticUnsupportedModels = new Set([
-  staticModels.openai["o4-mini"],
-  staticModels.ollama["gemma3:1b"],
-  staticModels.ollama["gemma3:4b"],
-  staticModels.ollama["gemma3:12b"],
-  staticModels.openRouter["gpt-oss-20b:free"],
-  staticModels.openRouter["qwen3-8b:free"],
-  staticModels.openRouter["qwen3-14b:free"],
-  staticModels.openRouter["deepseek-r1:free"],
-  staticModels.openRouter["gemini-2.0-flash-exp:free"],
+  // staticModels.openai["o4-mini"],
+  // staticModels.ollama["gemma3:1b"],
+  // staticModels.ollama["gemma3:4b"],
+  // staticModels.ollama["gemma3:12b"],
+  // staticModels.openRouter["gpt-oss-20b:free"],
+  // staticModels.openRouter["qwen3-8b:free"],
+  // staticModels.openRouter["qwen3-14b:free"],
+  // staticModels.openRouter["deepseek-r1:free"],
+  // staticModels.openRouter["gemini-2.0-flash-exp:free"],
 ]);
 
 const openaiCompatibleProviders = openaiCompatibleModelsSafeParse(
