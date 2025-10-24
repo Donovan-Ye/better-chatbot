@@ -17,6 +17,8 @@ services:
 
   postgres:
     image: postgres:17
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=your_username
       - POSTGRES_PASSWORD=your_password
