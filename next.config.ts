@@ -25,6 +25,17 @@ export default () => {
     experimental: {
       taint: true,
     },
+    async rewrites() {
+      // Keep API routes accessible at root (no basePath) while the app uses basePath
+      if (!basePath) return [];
+      return [
+        {
+          source: "/api/:path*",
+          destination: `${basePath}/api/:path*`,
+          basePath: false,
+        },
+      ];
+    },
   };
   const withNextIntl = createNextIntlPlugin();
   return withNextIntl(nextConfig);
