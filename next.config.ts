@@ -6,14 +6,7 @@ const BUILD_OUTPUT = process.env.NEXT_STANDALONE_OUTPUT
   : undefined;
 
 export default () => {
-  // Allow basePath to be configured via environment variable
-  // Defaults to '/better-chatbot' for production, empty for development
-  const basePath =
-    process.env.NEXT_PUBLIC_BASE_PATH ||
-    (process.env.NODE_ENV === "production" ? "/better-chatbot" : "");
-
   const nextConfig: NextConfig = {
-    basePath: basePath,
     output: BUILD_OUTPUT,
     cleanDistDir: true,
     devIndicators: {
