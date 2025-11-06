@@ -12,8 +12,6 @@ export default () => {
     process.env.NEXT_PUBLIC_BASE_PATH ||
     (process.env.NODE_ENV === "production" ? "/better-chatbot" : "");
 
-  const origin = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-
   const nextConfig: NextConfig = {
     basePath: basePath,
     output: BUILD_OUTPUT,
@@ -33,8 +31,7 @@ export default () => {
       return [
         {
           source: "/api/:path*",
-          // Must be absolute URL since source disables basePath
-          destination: `${origin}${basePath}/api/:path*`,
+          destination: `${basePath}/api/:path*`,
           basePath: false,
         },
       ];
