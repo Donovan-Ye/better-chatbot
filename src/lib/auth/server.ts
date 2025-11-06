@@ -13,6 +13,7 @@ import {
 } from "lib/db/pg/schema.pg";
 import { genericOAuth, GenericOAuthConfig } from "better-auth/plugins";
 import { getAuthConfig } from "./config";
+import { BASE_URL } from "lib/const";
 
 import logger from "logger";
 import { redirect } from "next/navigation";
@@ -51,7 +52,7 @@ const idmConfig: GenericOAuthConfig = {
       emailVerified: Boolean(userInfo.username),
       name: userInfo.name ?? "",
       image: userInfo.picture ?? null,
-      balance: "100",
+      balance: "15",
       createdAt: userInfo.createTime
         ? new Date(userInfo.createTime)
         : new Date(),
@@ -70,7 +71,7 @@ export const auth = betterAuth({
       config: [idmConfig],
     }),
   ],
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: BASE_URL,
   user: {
     additionalFields: {
       balance: {
