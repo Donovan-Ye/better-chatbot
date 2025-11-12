@@ -61,8 +61,10 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    console.log("session?.user.balance", session?.user.balance);
-    if (session?.user.balance <= 0) {
+    const currentBalance = await userRepository.getBalance(session.user.id);
+    const balanceNum = parseFloat(currentBalance);
+
+    if (balanceNum <= 0) {
       return new Response("Your balance is insufficient for testing", {
         status: 400,
       });
