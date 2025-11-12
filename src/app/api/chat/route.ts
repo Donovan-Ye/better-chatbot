@@ -61,8 +61,11 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
+    console.log("session?.user.balance", session?.user.balance);
     if (session?.user.balance <= 0) {
-      return new Response("余额不足，请联系管理员", { status: 400 });
+      return new Response("Your balance is insufficient for testing", {
+        status: 400,
+      });
     }
 
     const {
