@@ -144,6 +144,9 @@ export async function GET(request: NextRequest) {
   const client = await mcpClientsManager.getClient(session.mcpServerId);
 
   try {
+    // Ensure the OAuth provider adopts the callback state before finishing auth
+    // This is critical for PKCE: the code_verifier must match the challenge
+    await client?.client.ensureOAuthState(callbackData.state);
     await client?.client.finishAuth(callbackData.code, callbackData.state);
     await mcpClientsManager.refreshClient(session.mcpServerId);
 
