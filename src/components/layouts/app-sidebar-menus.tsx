@@ -1,13 +1,6 @@
 "use client";
-import {
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  useSidebar,
-} from "ui/sidebar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "ui/tooltip";
+import { SidebarMenuButton, useSidebar } from "ui/sidebar";
+import { Tooltip } from "ui/tooltip";
 import { SidebarMenu, SidebarMenuItem } from "ui/sidebar";
 import { SidebarGroupContent } from "ui/sidebar";
 
@@ -16,30 +9,21 @@ import Link from "next/link";
 import { getShortcutKeyList, Shortcuts } from "lib/keyboard-shortcuts";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { MCPIcon } from "ui/mcp-icon";
 import { WriteIcon } from "ui/write-icon";
-import {
-  FolderOpenIcon,
-  FolderSearchIcon,
-  PlusIcon,
-  Waypoints,
-} from "lucide-react";
-import { useCallback, useState } from "react";
-import { Skeleton } from "ui/skeleton";
-import { useArchives } from "@/hooks/queries/use-archives";
 import { ArchiveDialog } from "../archive-dialog";
+import { useState } from "react";
 
 export function AppSidebarMenus() {
   const router = useRouter();
   const t = useTranslations("");
   const { setOpenMobile } = useSidebar();
-  const [expandedArchive, setExpandedArchive] = useState(false);
+  // const [expandedArchive, setExpandedArchive] = useState(false);
   const [addArchiveDialogOpen, setAddArchiveDialogOpen] = useState(false);
 
-  const { data: archives, isLoading: isLoadingArchives } = useArchives();
-  const toggleArchive = useCallback(() => {
-    setExpandedArchive((prev) => !prev);
-  }, []);
+  // const { data: archives, isLoading: isLoadingArchives } = useArchives();
+  // const toggleArchive = useCallback(() => {
+  //   setExpandedArchive((prev) => !prev);
+  // }, []);
 
   return (
     <SidebarGroup>
@@ -74,7 +58,7 @@ export function AppSidebarMenus() {
             </SidebarMenuItem>
           </Tooltip>
         </SidebarMenu>
-        <SidebarMenu>
+        {/* <SidebarMenu>
           <Tooltip>
             <SidebarMenuItem>
               <Link href="/mcp">
@@ -85,8 +69,8 @@ export function AppSidebarMenus() {
               </Link>
             </SidebarMenuItem>
           </Tooltip>
-        </SidebarMenu>
-        <SidebarMenu>
+        </SidebarMenu> */}
+        {/* <SidebarMenu>
           <Tooltip>
             <SidebarMenuItem>
               <Link href="/workflow">
@@ -160,7 +144,7 @@ export function AppSidebarMenus() {
               </SidebarMenuSub>
             </>
           )}
-        </SidebarMenu>
+        </SidebarMenu> */}
       </SidebarGroupContent>
       <ArchiveDialog
         open={addArchiveDialogOpen}

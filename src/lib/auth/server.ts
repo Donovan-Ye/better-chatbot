@@ -76,7 +76,6 @@ export const auth = betterAuth({
     additionalFields: {
       balance: {
         type: "number",
-        required: true,
       },
     },
   },
